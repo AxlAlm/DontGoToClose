@@ -5,8 +5,9 @@ import pygame
 from src.map import Map
 
 if __name__ == "__main__":
-    map = Map()
-    map.create_map()
+    pygame.init()
+
+    map = Map(desc = "Fastest Path", map="example1")
 
     while True:
         pass
