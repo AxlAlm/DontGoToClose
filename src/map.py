@@ -9,8 +9,8 @@ import numpy as np
 import pygame
 
 # fastestpath
-from .objects import GridBlock
-from .penalizer import Penalizer
+from .grid_block import GridBlock
+from .distance_from_wall import DistanceFromWall
 
 
 class Map:
@@ -18,14 +18,12 @@ class Map:
     def __init__(self, 
                 desc:str, 
                 map :str = "example1",
-                draw_grid : bool = True,
-                draw_weights : bool = True,
-                penalty_distance :int = 5,
+                max_distance : int = 5,
+                show_distance : bool = True,
                 ):
         
-        self.penalizer = Penalizer(penalty_distance = penalty_distance)
-        self.draw_grid = draw_grid
-        self.draw_weights = draw_weights
+        self.distance_score = DistanceFromWall(max_distance = max_distance)
+        self.show_distance = show_distance
 
         # set desc
         pygame.display.set_caption(desc)
@@ -45,14 +43,9 @@ class Map:
 
         # variables we will fill
         self.grid : Dict[Tuple(int,int), GridBlock] = {}
-        self.obsts : List[GridBlock] = []
-        self.goal : GridBlock =  None
-        self.start :GridBlock  = None
-
         self.__create_map()
         
 
-  
     def __example_map_1(self):
 
         """
@@ -88,29 +81,31 @@ class Map:
         for y in ys:
             for x in xs:
                 obst = GridBlock(
+                                btype = "wall",
                                 x = int(x*self.block_size),
                                 y = int(y*self.block_size),
                                 width = self.block_size,
                                 height = self.block_size,
-                                color = "black",
+                                color = (51,51,51),
                                 shape = "rect",
+                                screen = self.screen, 
                                 )
 
                 self.grid[(x,y)] = obst
-                self.obsts.append(obst)
                 all_xys.append((x,y))
         
         
         # then we set a goal
         x = int(self.max_x / 2)
         self.goal = GridBlock(
+                                btype = "goal",
                                 x = int(x*self.block_size),
                                 y = 2*self.block_size,
                                 width = self.block_size,
                                 height = self.block_size,
-                                color = "green",
+                                color = (56,118,29),
                                 shape = "ellipse",
-                                is_goal = True
+                                screen = self.screen, 
                                 )
         self.grid[(x, 2)] =  self.goal
         self.goal_xy = (x,2)
@@ -118,12 +113,14 @@ class Map:
 
         # then we add start
         self.start = GridBlock(
+                                btype = "start",
                                 x = int(x*self.block_size),
                                 y = (self.max_y-2)*self.block_size,
                                 width = self.block_size,
                                 height = self.block_size,
-                                color = "blue",
-                                shape = "ellipse"
+                                color = (119,164,254),
+                                shape = "ellipse",
+                                screen = self.screen, 
                                 )
         self.grid[(x, self.max_y-2)] = self.start
         self.start_xy = (x, self.max_y-2)
@@ -136,38 +133,32 @@ class Map:
         # create map, which means create obstacles, goal and start
         all_obst_xys = self.__example_map_1()
 
+        # fill the binary grid
         for x,y in all_obst_xys:
             self._binary_grid[y,x] = 1
 
 
-        # then we fill all other grids with a GirdBlock GridBlock which contains information
-        # about how far off the closest obstacle is. By filling the grid like this we
-        # can easily traverse the grid later and always know where we are.
-        # we can also use this GirdBlock to score a certain path by adding some coloring :)
+        # then we fill all other grids with a which blocks which are set to open and 
+        # are penalized based on their vicinity to an closed block, e.g. an obstacle
         for x, w in enumerate(range(0, self.screen_width, self.block_size)):
             for y, h in enumerate(range(0, self.screen_height, self.block_size)):
-                #self.xy2wh[(x,y)] = (w,h)
 
                 if (x,y) in self.grid:
                     continue
                 
                 self.grid[(x,y)] = GridBlock(
+                                                btype = "empty",
                                                 x = w,
                                                 y = h,
                                                 width = self.block_size,
                                                 height = self.block_size,
                                                 shape = "rect",
-                                                color = "red",
-                                                weight = self.penalizer(grid=self._binary_grid, x=x, y=y),
-                                                is_closed = False,
-                                                #n_x_to_obj = find_closest(x, xs),  #find_closest(x, xs),
-                                                #n_y_to_obj = find_closest(y, ys),
+                                                color = "white",
+                                                dist_from_wall = self.distance_score(grid=self._binary_grid, x=x, y=y),
+                                                screen = self.screen, 
                                                 )
 
-
     def draw_map(self) -> None:
-        self.screen.fill("white")
-        [o.draw(self.screen, self.draw_weights) for o in self.grid.values()]  
-        #self.goal.draw(self.screen)
-        # self.draw(self.start)
+        self.screen.fill((231,244,244))
+        [o.fill(show_distance = self.show_distance) for o in self.grid.values()]  
         pygame.display.flip()

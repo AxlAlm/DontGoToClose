@@ -1,31 +1,24 @@
 
-
-
-
 # basics
 from typing import Tuple
 import numpy as np
 
 
-
-class Penalizer:
+class DistanceFromWall:
 
     """
-    Will calculate the penalty of a block in the grid based on its vicinity to
-    an obstacle.
+    Will calculate the (inverse?) normalized distance of a empty grid at a position (x,y)
+    to a wall at some position (x1!=x, y1!=y).
 
-    If "penalty_distance" == 5 we will penalize all grid blocks which are
-    within/or equal to 5 grid blocks from a obstacle.
+    max_distance: decided how many grids from a wall that should be included
+
+    If max_distance == 6 the normalized distance score is d ∈ {0.0, 0.2, 0.4, 0.6, 0.8, 1.0}
     
-    Penalty values will be discrete values between 0-1. Value intervals
-    is determined by penalty_distance. 
-    E.g. if penalty_distance == 5 then values = {0.0, 0.2, 0.4, 0.6, 0.8, 10}
-    
-    
+    The higher the score the closer the wall is
     """
 
-    def __init__(self, penalty_distance : int = 5) -> None:
-        self.penalty_distance = penalty_distance
+    def __init__(self, max_distance : int = 5) -> None:
+        self.max_distance = max_distance
         
 
     def _find_first_one(self, values:np.ndarray) -> int:
@@ -56,13 +49,13 @@ class Penalizer:
         # as you need to go through paddings at the momment when looking
         # for the first 1. But its easier to get the diagonal and 
         # reversed diagonal
-        padded_grid = np.pad(grid, self.penalty_distance)
+        padded_grid = np.pad(grid, self.max_distance)
 
         # we set the slicing indexing
         i = y
-        i_ = y+(self.penalty_distance*2)+1
+        i_ = y+(self.max_distance*2)+1
         j = x
-        j_ = x+(self.penalty_distance*2)+1
+        j_ = x+(self.max_distance*2)+1
 
         # get the neighbours for (y,x)
         m_neighbours = padded_grid[i:i_, j: j_]
@@ -74,8 +67,8 @@ class Penalizer:
         # find the closest 1
         # k = n steps to the closest 1 on the diagonal
         # rk = n steps to the closest 1 on the reversed/mirrored diagonal
-        k = self._find_closest_diag(diag_values = diag, i = self.penalty_distance)
-        rk = self._find_closest_diag(diag_values = rev_diag, i = self.penalty_distance)
+        k = self._find_closest_diag(diag_values = diag, i = self.max_distance)
+        rk = self._find_closest_diag(diag_values = rev_diag, i = self.max_distance)
 
         return k, rk
 
@@ -99,18 +92,18 @@ class Penalizer:
         return (a, b, k, rk)
 
         
-    def calc_penalty_score(self, a:int, b:int, k:int, rk:int) -> float:
+    def distance_score(self, a:int, b:int, k:int, rk:int) -> float:
 
         min_distance = min([a, b, k, rk])
 
-        if min_distance > self.penalty_distance:
+        if min_distance > self.max_distance:
             return 0.0
 
-        penalty = 1 - (min_distance * (1/self.penalty_distance))
+        penalty = 1 - (min_distance * (1/self.max_distance))
 
         return penalty
 
     
     def __call__(self, grid:np.ndarray, x:int, y:int) -> float:
-        return self.calc_penalty_score(*self.find_closest(grid=grid, x=x, y=y))
+        return self.distance_score(*self.find_closest(grid=grid, x=x, y=y))
     
