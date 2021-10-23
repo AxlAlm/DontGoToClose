@@ -85,6 +85,7 @@ class Djikstra:
             # we get all the unvisted neighbours
             neighbours = self.get_neighbours(x,y) 
 
+
             # then we loop through all neighbours
             for n_xy in neighbours:
 
@@ -108,7 +109,8 @@ class Djikstra:
                     self.path_scores[n_xy] = new_path_score
                     q.put((new_path_score, n_xy))
 
-                    grid_obj.fill(color = SEARCH_COLOR, shape = "ellipse", update = True)
+                    if n_xy != self.start_xy and n_xy != self.goal_xy:
+                        grid_obj.fill(color = SEARCH_COLOR, shape = "ellipse", update = True)
 
                     # we add the cells so we can backtrack the shortest path
                     self.backtrack_dict[n_xy] = ((x, y), grid_obj)
