@@ -14,7 +14,7 @@ If we then run the an algorithm to find the shortest path we can see that, given
 
 <img src="docs/example1.gif" width="400" />
 
-We might find problems like this in various areas. For example when we want to navigate through a crowded area with a car, or chose the fastest path to a location given that some roads have different speed limits, traffic jams or whatever, or in a game where we would want our AI to avoid enemies!
+We might find problems like this in various areas. For example when we want to navigate through a crowded area with a car, or chose the fastest path to a location given that we want to avoid some areas (due to example heavy traffic), or in a game where we would want our AI to avoid enemies!
 
 
 # How to run
