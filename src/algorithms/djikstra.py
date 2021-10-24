@@ -7,6 +7,7 @@ from queue import PriorityQueue
 
 # fastestpath
 from ..map import Map
+from ..utils import surrounding_area
 
 
 PATH_COLOR = (255,145,29) #(255,217,102)
@@ -30,13 +31,13 @@ class Djikstra:
         self.possible_paths = set(self.path_scores.keys())
 
         # we init our visited with the gird block which are obstacles
-        self.visited = {k for k, obj in self.grid.items() if obj.btype == "wall"}
+        self.visited = {k for k, obj in self.grid.items() if obj.btype == "obstacle"}
 
         # shortest_path
         self.backtrack_dict = {}
         
-        # penalty decides the cost to travel to a new grid based on how close to the 
-        # wall you the grid is. The penalty_cost * dist_to_wall (0-1) is added to 1.
+        # penalty decides the cost to travel to a new grid based on how close to an 
+        # obstacle you the grid is. The penalty_cost * distance (0-1) is added to 1.
         self.penalty_cost = penalty_cost
     
 
@@ -57,7 +58,7 @@ class Djikstra:
         #   x x x
         #   x o x
         #   x x x
-        neighbours = set([(x-1, y), (x+1, y), (x-1, y+1), (x+1, y+1),(x, y-1), (x, y+1)])
+        neighbours = surrounding_area(x, y, size = 1)
 
         # we filter out non existing x,ys
         filtered_neighbours = neighbours.intersection(self.possible_paths)
@@ -101,7 +102,7 @@ class Djikstra:
 
                 # then we get the Object occopying that grid and get the 
                 # weight to travel to that grid
-                new_path_score = ps + (1 + (self.penalty_cost * self.grid[n_xy].dist_from_wall))  
+                new_path_score = ps + (1 + (self.penalty_cost * self.grid[n_xy].distance))  
 
                 # if the path score is less then before we chose the path 
                 # else move to the next neighbour

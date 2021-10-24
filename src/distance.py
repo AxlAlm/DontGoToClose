@@ -4,17 +4,17 @@ from typing import Tuple
 import numpy as np
 
 
-class DistanceFromWall:
+class DistanceToObstacle:
 
     """
     Will calculate the (inverse?) normalized distance of a empty grid at a position (x,y)
-    to a wall at some position (x1!=x, y1!=y).
+    to a obstacle at some position (x1!=x, y1!=y).
 
     max_distance: decided how many grids from a wall that should be included
 
     If max_distance == 6 the normalized distance score is d ∈ {0.0, 0.2, 0.4, 0.6, 0.8, 1.0}
     
-    The higher the score the closer the wall is
+    The higher the score the closer the obstacle is
     """
 
     def __init__(self, max_distance : int = 5) -> None:

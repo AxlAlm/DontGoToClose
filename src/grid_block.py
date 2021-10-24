@@ -26,12 +26,12 @@ class GridBlock:
     color : str
     screen : pygame.display
     
-    # norm_distance_to_wall
-    dist_from_wall : float = 0.0
+    # normalized (inverse?) distance to closest obstacle
+    distance : float = 0.0
 
     # init shape and placement
     def __post_init__(self) -> None:
-        assert self.btype in ["empty", "wall", "goal", "start"]
+        assert self.btype in ["empty", "obstacle", "goal", "start"]
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
 
@@ -47,7 +47,7 @@ class GridBlock:
         shape = shape if shape else self.shape
 
         if show_distance and self.btype == "empty":
-            v = 255 * (1-self.dist_from_wall)
+            v = 255 * (1-self.distance)
             color = (255, v, v)
     
         getattr(pygame.draw, shape)(self.screen, color, self.rect)

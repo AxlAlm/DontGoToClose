@@ -1,9 +1,9 @@
 
 
 #basics
-
 import argparse
-
+import random
+import numpy as np
 
 # pygame
 import pygame
@@ -21,14 +21,19 @@ if __name__ == "__main__":
     parser.add_argument("-algo", type = str, default = "Djikstra")
     parser.add_argument("-penalty_cost", type = int, default = 5)
     parser.add_argument("-show_distance",  default = False, action = "store_true")
+    parser.add_argument("-random_seed",  default = None, type = int)
     args = parser.parse_args()
+
+    if args.random_seed is not None:
+        random.seed(args.random_seed)
+        np.random.seed(args.random_seed)
 
     # init pygame
     pygame.init()
 
     # create and draw map
     map = Map(
-            desc = "Fastest Path (Press 'Enter' to start)", 
+            desc = "Press 'Enter' to start!", 
             map = args.map,
             max_distance = args.max_distance,
             show_distance = args.show_distance,
@@ -51,3 +56,7 @@ if __name__ == "__main__":
 
             if event.key == pygame.K_BACKSPACE:
                 map.draw_map()
+
+
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
