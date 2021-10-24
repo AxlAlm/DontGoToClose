@@ -6,11 +6,11 @@ For example, take the following problem:
 
 <img src="docs/example1.png" width="400" />
 
-Obviously, the shortest path would be straight through the middle tunnel. However, if we add to the problem a penalty on paths close to obstacles our problem changes. Below we can see these penalties visualized ( darker red meaning more penalty)
+Obviously, the shortest path would be to go straight up through the small tunnel. However, if we add to the problem a penalty on paths close to obstacles our problem changes. Below we can see these penalties visualized ( darker red meaning more penalty)
 
 <img src="docs/example1_2.png" width="400" />
 
-If we then run the an algorithm to find the shortest path we can see that, given the right penalty, the shortest path will not be between the tunnel!
+If we then run the an algorithm to find the shortest path, we can see the shortest path is not just straight up.
 
 <img src="docs/example1.gif" width="400" />
 
