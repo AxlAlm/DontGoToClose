@@ -24,3 +24,16 @@ Note! Currently, there is only support for example1 map and Djikstra algorithm
     python run.py -map example1 -max_distance 5 -show_distance -penalty_cost 5 -algo Djikstra
 
 
+# Example on a random generated map:
+
+    python run.py -map random -random_seed 9999
+
+
+<img src="docs/random_map.gif" width="400" />
+
+
+
+## TODO
+
+- fix so that start and goal is not "locked" in when generating a random map
+- add A*
