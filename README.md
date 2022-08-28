@@ -49,4 +49,5 @@ For example, if max_distance = 5, penalty_cost = 5 and we are the grid we are ev
 ## TODO
 
 - fix so that start and goal is not "locked" in when generating a random map
+- fix bug where start and end end up in a wall
 - add A*
